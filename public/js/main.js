@@ -1,6 +1,16 @@
 /* global $, _, Backbone, window, document */
 $(function () {
 
+  function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+  
   var getCookieValue = function(a) {
     var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)')
     return b ? b.pop() : ''
@@ -11,7 +21,7 @@ $(function () {
   if (tokenKey) {
     $.ajaxSetup({
       headers: {
-        'Authorization': window.localStorage.getItem(tokenKey)
+        'Authorization': window.localStorage.getItem(tokenKey) || getParameterByName(tokenKey)
       },
       error: function (err) {
         if (err.status == 403 || err.status == 401) {
